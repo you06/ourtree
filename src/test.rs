@@ -13,16 +13,16 @@ where
     // empty read
     assert!(index.get(&1, &4).is_empty());
     // non-empty read
-    index.insert_or_update(2, 2);
+    assert_eq!(index.insert_or_update(2, 2), None);
     assert!(index.get(&1, &1).is_empty());
     assert_eq!(index.get(&1, &2), vec![&2]);
     assert_eq!(index.get(&1, &4), vec![&2]);
-    index.insert_or_update(3, 33);
+    assert_eq!(index.insert_or_update(3, 33), None);
     assert_eq!(index.get(&1, &4), vec![&2, &33]);
-    index.insert_or_update(4, 444);
+    assert_eq!(index.insert_or_update(4, 444), None);
     assert_eq!(index.get(&1, &4), vec![&2, &33, &444]);
     // replace
-    index.insert_or_update(4, 555);
+    assert_eq!(index.insert_or_update(4, 555), Some(444));
     assert_eq!(index.get(&1, &4), vec![&2, &33, &555]);
     // delete
     assert_eq!(index.delete(&3, &4), vec![33, 555]);

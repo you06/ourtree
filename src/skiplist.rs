@@ -80,18 +80,17 @@ impl<K: Ord + Send + 'static, V: Send + 'static> IndexOperate<K, V> for Index<K,
     }
     /// insert of update a key
     fn insert_or_update(&self, key: K, value: V) -> Option<V> {
-        let entry = self.index.insert(key, UnsafeCell::new(Some(value)));
-        if entry.is_removed() {
+        let before = self.index.get(&key);
+        self.index.insert(key, UnsafeCell::new(Some(value)));
+        before.map(|entry| {
             let v = entry.value();
             let v = v.get();
             let mut ret = None;
             unsafe {
                 std::ptr::swap(&mut ret as *mut Option<V>, v);
-                ret
+                ret.unwrap()
             }
-        } else {
-            None
-        }
+        })
     }
 }
 
